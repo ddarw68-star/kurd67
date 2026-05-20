@@ -1,2 +1,657 @@
 # kurd67
 Darw
+
+``````
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+if PlayerGui:FindFirstChild("DeltaModMenu") then
+    PlayerGui.DeltaModMenu:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "DeltaModMenu"
+ScreenGui.ResetOnSpawn = false 
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
+
+-- Main Frame
+local Frame = Instance.new("Frame")
+Frame.Name = "MainFrame"
+Frame.Size = UDim2.new(0, 510, 0, 440)
+Frame.Position = UDim2.new(0.5, -255, 0.5, -220)
+Frame.BackgroundColor3 = Color3.fromRGB(28, 28, 32)
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = Frame
+
+StarterGui:SetCore("SendNotification", {
+    Title = "KURD HUB UI",
+    Text = "مۆد مینیۆ بە سەرکەوتوویی جێگیرکرا! ☀️",
+    Duration = 3
+})
+
+-- ================= [ عەلەمی کوردستان ] =================
+local FlagContainer = Instance.new("Frame")
+FlagContainer.Size = UDim2.new(1, 0, 0, 4)
+FlagContainer.BackgroundTransparency = 1
+FlagContainer.Parent = Frame
+
+local TopLineRed = Instance.new("Frame")
+TopLineRed.Size = UDim2.new(0.333, 0, 1, 0)
+TopLineRed.BackgroundColor3 = Color3.fromRGB(235, 35, 35)
+TopLineRed.BorderSizePixel = 0
+TopLineRed.Parent = FlagContainer
+
+local TopLineWhite = Instance.new("Frame")
+TopLineWhite.Size = UDim2.new(0.334, 0, 1, 0)
+TopLineWhite.Position = UDim2.new(0.333, 0, 0, 0)
+TopLineWhite.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TopLineWhite.BorderSizePixel = 0
+TopLineWhite.Parent = FlagContainer
+
+local TopLineGreen = Instance.new("Frame")
+TopLineGreen.Size = UDim2.new(0.333, 0, 1, 0)
+TopLineGreen.Position = UDim2.new(0.667, 0, 0, 0)
+TopLineGreen.BackgroundColor3 = Color3.fromRGB(35, 145, 35)
+TopLineGreen.BorderSizePixel = 0
+TopLineGreen.Parent = FlagContainer
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0, 200, 0, 45)
+Title.Position = UDim2.new(0, 20, 0, 6)
+Title.BackgroundTransparency = 1
+Title.Text = "☀️ KURD HUB Premium"
+Title.TextColor3 = Color3.fromRGB(255, 180, 0)
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 20
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Frame
+
+local Credits = Instance.new("TextLabel")
+Credits.Size = UDim2.new(1, -20, 0, 20)
+Credits.Position = UDim2.new(0, 10, 1, -22)
+Credits.BackgroundTransparency = 1
+Credits.Text = "Designed by problem"
+Credits.TextColor3 = Color3.fromRGB(150, 150, 160)
+Credits.Font = Enum.Font.SourceSansItalic
+Credits.TextSize = 14
+Credits.TextXAlignment = Enum.TextXAlignment.Right
+Credits.Parent = Frame
+
+-- ================= [ Sidebar Menu ] =================
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 140, 1, -80)
+Sidebar.Position = UDim2.new(0, 12, 0, 50)
+Sidebar.BackgroundColor3 = Color3.fromRGB(38, 38, 45)
+Sidebar.Parent = Frame
+
+local SidebarCorner = Instance.new("UICorner")
+SidebarCorner.CornerRadius = UDim.new(0, 8)
+SidebarCorner.Parent = Sidebar
+
+local SidebarList = Instance.new("UIListLayout")
+SidebarList.Parent = Sidebar
+SidebarList.Padding = UDim.new(0, 5)
+SidebarList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Size = UDim2.new(1, -180, 1, -80)
+ContentContainer.Position = UDim2.new(0, 162, 0, 50)
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.Parent = Frame
+
+local Pages = {}
+local function CreatePage(name)
+    local Page = Instance.new("ScrollingFrame")
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.BorderSizePixel = 0
+    Page.ScrollBarThickness = 4
+    Page.ScrollBarImageColor3 = Color3.fromRGB(255, 180, 0)
+    Page.Visible = false
+    Page.CanvasSize = UDim2.new(0, 0, 2, 0)
+    Page.Parent = ContentContainer
+    
+    local List = Instance.new("UIListLayout")
+    List.Parent = Page
+    List.Padding = UDim.new(0, 8)
+    
+    Pages[name] = Page
+    return Page
+end
+
+local MainPage = CreatePage("Main")
+local PlayerPage = CreatePage("Player")
+local AnimPage = CreatePage("Animations")
+local VisualPage = CreatePage("Visuals")
+local VictimPage = CreatePage("Victims")
+local AdvancedPage = CreatePage("Advanced")
+
+local function SelectTab(name)
+    for k, p in pairs(Pages) do p.Visible = (k == name) end
+end
+
+local function AddTabButton(text, pageName)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -10, 0, 34)
+    Btn.BackgroundColor3 = Color3.fromRGB(48, 48, 58)
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.Font = Enum.Font.SourceSansBold
+    Btn.TextSize = 13
+    Btn.Parent = Sidebar
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = Btn
+    
+    Btn.MouseButton1Click:Connect(function() SelectTab(pageName) end)
+end
+
+AddTabButton("اصلی (مۆد و چات)", "Main")
+AddTabButton("🏃 یاریزان و ئەنتی AFK", "Player")
+AddTabButton("💃 ئەنیمەیشن و دانس", "Animations")
+AddTabButton("👁️ بینینی خەڵک (ESP)", "Visuals")
+AddTabButton("❌ لیستی ڕاوکێراوان", "Victims")
+AddTabButton("⚡ پێشکەوتوو", "Advanced")
+
+SelectTab("Main")
+
+local function CreateButton(text, color, parentPage, callback)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, -5, 0, 38)
+    Button.BackgroundColor3 = color
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.SourceSansBold
+    Button.TextSize = 14
+    Button.Parent = parentPage
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 6)
+    Corner.Parent = Button
+    
+    Button.MouseButton1Click:Connect(callback)
+    return Button
+end
+
+-- Input یاریزان
+local TargetInputContainer = Instance.new("Frame")
+TargetInputContainer.Size = UDim2.new(1, -5, 0, 45)
+TargetInputContainer.BackgroundTransparency = 1
+TargetInputContainer.Parent = MainPage
+
+local PlayerInput = Instance.new("TextBox")
+PlayerInput.Size = UDim2.new(1, -55, 0, 36)
+PlayerInput.Position = UDim2.new(0, 0, 0, 4)
+PlayerInput.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+PlayerInput.PlaceholderText = "ناوی یاریزان لێرە بنووسە..."
+PlayerInput.Text = ""
+PlayerInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlayerInput.PlaceholderColor3 = Color3.fromRGB(160, 160, 170)
+PlayerInput.Font = Enum.Font.SourceSansBold
+PlayerInput.TextSize = 14
+PlayerInput.Parent = TargetInputContainer
+
+local PICorner = Instance.new("UICorner")
+PICorner.CornerRadius = UDim.new(0, 6)
+PICorner.Parent = PlayerInput
+
+local PlayerImage = Instance.new("ImageLabel")
+PlayerImage.Size = UDim2.new(0, 40, 0, 40)
+PlayerImage.Position = UDim2.new(1, -43, 0, 2)
+PlayerImage.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+PlayerImage.Image = "rbxassetid://0"
+PlayerImage.Parent = TargetInputContainer
+
+local ImgCorner = Instance.new("UICorner")
+ImgCorner.CornerRadius = UDim.new(0, 6)
+ImgCorner.Parent = PlayerImage
+
+local function UpdatePlayerImage(username)
+    local target = nil
+    for _, v in pairs(Players:GetPlayers()) do
+        if v.Name:lower():sub(1, #username) == username:lower() then target = v break end
+    end
+    if target then
+        PlayerImage.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. target.UserId .. "&width=420&height=420&format=png"
+    else
+        PlayerImage.Image = "rbxassetid://0"
+    end
+end
+
+PlayerInput:GetPropertyChangedSignal("Text"):Connect(function() UpdatePlayerImage(PlayerInput.Text) end)
+
+-- گۆڕاوەکان
+local ActionLoop = nil
+local ActionTime = 0
+local CurrentTargetPlayer = nil  
+local TotalActionSeconds = 0     
+local DanceTrack = nil
+local EspEnabled = false
+local AntiAfkEnabled = false
+local AntiBangEnabled = false
+local AfkConnection = nil
+local ClickTargetEnabled = false
+local ChatSpamEnabled = false
+local SpamText = "KURD HUB ON TOP! 🔥"
+local TeleportEnabled = false
+local PushEnabled = false
+local FreezeEnabled = false
+local MoneyStealEnabled = false
+local BotmanEnabled = false
+
+local function StopActions() 
+    if ActionLoop then ActionLoop:Disconnect() ActionLoop = nil end
+    CurrentTargetPlayer = nil
+    TotalActionSeconds = 0
+end
+
+local function SayInChat(message)
+    pcall(function()
+        if TextChatService and TextChatService:FindFirstChild("TextChannels") and TextChatService.TextChannels:FindFirstChild("RBXGeneral") then
+            TextChatService.TextChannels.RBXGeneral:SendAsync(message)
+        else
+            ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+        end
+    end)
+end
+
+Players.PlayerRemoving:Connect(function(player)
+    if CurrentTargetPlayer and player == CurrentTargetPlayer then
+        local VictimLabel = Instance.new("TextLabel")
+        VictimLabel.Size = UDim2.new(1, -5, 0, 35)
+        VictimLabel.BackgroundColor3 = Color3.fromRGB(55, 35, 35)
+        VictimLabel.Text = "❌ " .. player.Name .. " لێفتی کرد دوای " .. string.format("%.1f", TotalActionSeconds) .. " چرکە!"
+        VictimLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
+        VictimLabel.Font = Enum.Font.SourceSansBold
+        VictimLabel.TextSize = 13
+        VictimLabel.Parent = VictimPage
+        
+        local Corner = Instance.new("UICorner")
+        Corner.CornerRadius = UDim.new(0, 6)
+        Corner.Parent = VictimLabel
+        StopActions()
+    end
+end)
+
+-- ================= [ سپامی چات ] =================
+local SpamInputContainer = Instance.new("Frame")
+SpamInputContainer.Size = UDim2.new(1, -5, 0, 45)
+SpamInputContainer.BackgroundTransparency = 1
+SpamInputContainer.Parent = MainPage
+
+local ChatInput = Instance.new("TextBox")
+ChatInput.Size = UDim2.new(1, 0, 0, 36)
+ChatInput.Position = UDim2.new(0, 0, 0, 4)
+ChatInput.BackgroundColor3 = Color3.fromRGB(40, 50, 40)
+ChatInput.PlaceholderText = "نامەی سپام لێرە بنووسە..."
+ChatInput.Text = "KURD HUB ON TOP! 🔥"
+ChatInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatInput.PlaceholderColor3 = Color3.fromRGB(150, 170, 150)
+ChatInput.Font = Enum.Font.SourceSansBold
+ChatInput.TextSize = 13
+ChatInput.Parent = SpamInputContainer
+
+local CICorner = Instance.new("UICorner")
+CICorner.CornerRadius = UDim.new(0, 6)
+CICorner.Parent = ChatInput
+
+local SpamBtn = nil
+SpamBtn = CreateButton("💬 دەستپێکردنی سپام چات: ناچالاکە", Color3.fromRGB(35, 95, 95), MainPage, function()
+    ChatSpamEnabled = not ChatSpamEnabled
+    if ChatSpamEnabled then
+        SpamBtn.Text = "🛑 وەستاندنی سپام چات"
+        SpamBtn.BackgroundColor3 = Color3.fromRGB(185, 45, 45)
+        SpamText = ChatInput.Text
+        task.spawn(function()
+            while ChatSpamEnabled do
+                SayInChat(SpamText)
+                task.wait(1)
+            end
+        end)
+    else
+        SpamBtn.Text = "💬 دەستپێکردنی سپام چات: ناچالاکە"
+        SpamBtn.BackgroundColor3 = Color3.fromRGB(35, 95, 95)
+    end
+end)
+
+-- ================= [ کلیک بۆ دیاریکردن ] =================
+local ClickBtn = nil
+ClickBtn = CreateButton("🎯 یاریزان دیاری بکە بە کلیک: ناچالاکە", Color3.fromRGB(65, 65, 75), MainPage, function()
+    ClickTargetEnabled = not ClickTargetEnabled
+    if ClickTargetEnabled then
+        ClickBtn.Text = "🎯 ئێستا کلیک لە یاریزانەکە بکە"
+        ClickBtn.BackgroundColor3 = Color3.fromRGB(215, 135, 0)
+    else
+        ClickBtn.Text = "🎯 یاریزان دیاری بکە بە کلیک: ناچالاکە"
+        ClickBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 75)
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if ClickTargetEnabled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+        local mousePos = UserInputService:GetMouseLocation()
+        local camera = workspace.CurrentCamera
+        local ray = camera:ViewportPointToRay(mousePos.X, mousePos.Y)
+        local raycastResult = workspace:Raycast(ray.Origin, ray.Direction * 1000)
+        
+        if raycastResult and raycastResult.Instance then
+            local model = raycastResult.Instance:FindFirstAncestorOfClass("Model")
+            if model then
+                local clickedPlayer = Players:GetPlayerFromCharacter(model)
+                if clickedPlayer and clickedPlayer ~= LocalPlayer then
+                    PlayerInput.Text = clickedPlayer.Name
+                    UpdatePlayerImage(clickedPlayer.Name)
+                    ClickTargetEnabled = false
+                    ClickBtn.Text = "🎯 یاریزان دیاری بکە بە کلیک: ناچالاکە"
+                    ClickBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 75)
+                end
+            end
+        end
+    end
+end)
+
+-- ================= [ فەرمانەکان ] =================
+
+CreateButton("تەکان لێدان لە دواوە (Bang)", Color3.fromRGB(45, 145, 45), MainPage, function()
+    StopActions() 
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then CurrentTargetPlayer = v break end
+    end
+    if CurrentTargetPlayer and CurrentTargetPlayer.Character and CurrentTargetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        ActionTime = 0
+        TotalActionSeconds = 0
+        ActionLoop = RunService.Heartbeat:Connect(function(dt)
+            if CurrentTargetPlayer and CurrentTargetPlayer.Character and CurrentTargetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                ActionTime = ActionTime + dt * 25 
+                TotalActionSeconds = TotalActionSeconds + dt
+                LocalPlayer.Character.HumanoidRootPart.CFrame = CurrentTargetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1 + math.sin(ActionTime) * 0.85)
+            else StopActions() end
+        end)
+    end
+end)
+
+CreateButton("تەکان لێدان لە پ��شەوە (Front Bang)", Color3.fromRGB(35, 125, 125), MainPage, function()
+    StopActions() 
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then CurrentTargetPlayer = v break end
+    end
+    if CurrentTargetPlayer and CurrentTargetPlayer.Character and CurrentTargetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        ActionTime = 0
+        TotalActionSeconds = 0
+        ActionLoop = RunService.Heartbeat:Connect(function(dt)
+            if CurrentTargetPlayer and CurrentTargetPlayer.Character and CurrentTargetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                ActionTime = ActionTime + dt * 25 
+                TotalActionSeconds = TotalActionSeconds + dt
+                LocalPlayer.Character.HumanoidRootPart.CFrame = CurrentTargetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -1 - math.sin(ActionTime) * 0.85) * CFrame.Angles(0, math.pi, 0)
+            else StopActions() end
+        end)
+    end
+end)
+
+CreateButton("بەشی مژین (Suck)", Color3.fromRGB(165, 45, 145), MainPage, function()
+    StopActions()
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then CurrentTargetPlayer = v break end
+    end
+    if CurrentTargetPlayer and CurrentTargetPlayer.Character and CurrentTargetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        ActionTime = 0
+        TotalActionSeconds = 0
+        ActionLoop = RunService.Heartbeat:Connect(function(dt)
+            if CurrentTargetPlayer and CurrentTargetPlayer.Character and CurrentTargetPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                ActionTime = ActionTime + dt * 20 
+                TotalActionSeconds = TotalActionSeconds + dt
+                LocalPlayer.Character.HumanoidRootPart.CFrame = CurrentTargetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, -1 + math.sin(ActionTime) * 0.4, -1.2)
+            else StopActions() end
+        end)
+    end
+end)
+
+CreateButton("🛑 وەستاندنی هەموو فەرمانەکان", Color3.fromRGB(185, 45, 45), MainPage, function()
+    StopActions()
+end)
+
+-- ================= [ PLAYER PAGE ] =================
+local AntiAfkBtn = nil
+AntiAfkBtn = CreateButton("ئەنتی AFK: ناچالاکە", Color3.fromRGB(105, 45, 45), PlayerPage, function()
+    AntiAfkEnabled = not AntiAfkEnabled
+    if AntiAfkEnabled then
+        AntiAfkBtn.Text = "ئەنتی AFK: چالاکە"
+        AntiAfkBtn.BackgroundColor3 = Color3.fromRGB(35, 135, 35)
+        AfkConnection = LocalPlayer.Idled:Connect(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end)
+    else
+        AntiAfkBtn.Text = "ئەنتی AFK: ناچالاکە"
+        AntiAfkBtn.BackgroundColor3 = Color3.fromRGB(105, 45, 45)
+        if AfkConnection then AfkConnection:Disconnect() AfkConnection = nil end
+    end
+end)
+
+local AntiBangBtn = nil
+AntiBangBtn = CreateButton("🛡️ ئەنتی بانگ: ناچالاکە", Color3.fromRGB(85, 45, 115), PlayerPage, function()
+    AntiBangEnabled = not AntiBangEnabled
+    if AntiBangEnabled then
+        AntiBangBtn.Text = "🛡️ ئەنتی بانگ: چالاکە"
+        AntiBangBtn.BackgroundColor3 = Color3.fromRGB(115, 45, 185)
+        task.spawn(function()
+            while AntiBangEnabled do
+                pcall(function()
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local root = LocalPlayer.Character.HumanoidRootPart
+                        if root.Velocity.Magnitude > 70 or root.RotVelocity.Magnitude > 70 then
+                            root.Velocity = Vector3.new(0,0,0)
+                            root.RotVelocity = Vector3.new(0,0,0)
+                        end
+                    end
+                end)
+                task.wait(0.1)
+            end
+        end)
+    else
+        AntiBangBtn.Text = "🛡️ ئەنتی بانگ: ناچالاکە"
+        AntiBangBtn.BackgroundColor3 = Color3.fromRGB(85, 45, 115)
+    end
+end)
+
+CreateButton("خێراکردنی یاریزان (Speed 100)", Color3.fromRGB(55, 55, 65), PlayerPage, function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 100 end
+end)
+
+CreateButton("بازدانی بەرز (Jump Power)", Color3.fromRGB(0, 105, 155), PlayerPage, function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        humanoid.JumpPower = 150
+        humanoid.UseJumpPower = true 
+    end
+end)
+
+-- ================= [ ANIMATIONS & VISUALS ] =================
+CreateButton("ئەنیمەیشنی دانس (Dance)", Color3.fromRGB(215, 110, 35), AnimPage, function()
+    if DanceTrack then DanceTrack:Stop() DanceTrack = nil end
+    local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://507468601" 
+        DanceTrack = humanoid:LoadAnimation(Anim)
+        DanceTrack:Play()
+    end
+end)
+
+CreateButton("بینینی خەڵک لە پشتی دیوارەوە (ESP)", Color3.fromRGB(75, 135, 185), VisualPage, function()
+    EspEnabled = not EspEnabled
+    if EspEnabled then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                if not p.Character.HumanoidRootPart:FindFirstChild("KurdEsp") then
+                    local Box = Instance.new("BoxHandleAdornment")
+                    Box.Name = "KurdEsp"
+                    Box.Size = Vector3.new(4, 6, 4)
+                    Box.AlwaysOnTop = true
+                    Box.ZIndex = 5
+                    Box.Color3 = Color3.fromRGB(255, 180, 0)
+                    Box.Adornee = p.Character.HumanoidRootPart
+                    Box.Parent = p.Character.HumanoidRootPart
+                end
+            end
+        end
+    else
+        for _, p in pairs(Players:GetPlayers()) do
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                if p.Character.HumanoidRootPart:FindFirstChild("KurdEsp") then p.Character.HumanoidRootPart.KurdEsp:Destroy() end
+            end
+        end
+    end
+end)
+
+-- ================= [ فیچرە نوێی پێشکەوتوو ] =================
+
+-- تەلپۆرت فیچری
+CreateButton("🚀 تەلپۆرت بۆ یاریزان", Color3.fromRGB(200, 100, 50), AdvancedPage, function()
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then
+            if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame + Vector3.new(5, 3, 5)
+                SayInChat("تەلپۆرت بۆ " .. v.Name)
+            end
+            break
+        end
+    end
+end)
+
+-- لادان کردن (Push)
+CreateButton("💪 لادان کردنی یاریزان (Push)", Color3.fromRGB(150, 50, 50), AdvancedPage, function()
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then
+            if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                v.Character.HumanoidRootPart.Velocity = v.Character.HumanoidRootPart.Velocity + Vector3.new(200, 100, 200)
+                SayInChat("🔥 لادام کرد " .. v.Name)
+            end
+            break
+        end
+    end
+end)
+
+-- فریز کردن (Freeze)
+local FreezeTargets = {}
+CreateButton("❄️ فریز کردنی یاریزان (Freeze)", Color3.fromRGB(100, 150, 200), AdvancedPage, function()
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then
+            if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                if FreezeTargets[v.Name] then
+                    FreezeTargets[v.Name] = false
+                    SayInChat("❄️ فریز کردن وەستایەوە")
+                else
+                    FreezeTargets[v.Name] = true
+                    task.spawn(function()
+                        while FreezeTargets[v.Name] do
+                            if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                                v.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                                v.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+                            end
+                            task.wait(0.1)
+                        end
+                    end)
+                    SayInChat("❄️ " .. v.Name .. " فریز کراوە!")
+                end
+            end
+            break
+        end
+    end
+end)
+
+-- بۆتمان (Botman - جێگیرکردن)
+CreateButton("🤖 بۆتمان - جێگیرکردنی یاریزان", Color3.fromRGB(100, 100, 150), AdvancedPage, function()
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then
+            if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                BotmanEnabled = not BotmanEnabled
+                if BotmanEnabled then
+                    SayInChat("🤖 بۆتمان چالاکی کرا!")
+                    task.spawn(function()
+                        while BotmanEnabled and v and v.Character do
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame + Vector3.new(0, 0, -3)
+                            task.wait(0.1)
+                        end
+                    end)
+                else
+                    SayInChat("🤖 بۆتمان دەستپێ کرا!")
+                end
+            end
+            break
+        end
+    end
+end)
+
+-- نیشاندانی پەیام تایبەت
+CreateButton("💬 نیشاندانی پەیام", Color3.fromRGB(200, 150, 100), AdvancedPage, function()
+    local TargetName = PlayerInput.Text:lower()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Name:lower():sub(1, #TargetName) == TargetName then
+            SayInChat("سڵاو " .. v.Name .. "! 👋 من KURD HUB بەکاردێنم 🔥")
+            break
+        end
+    end
+end)
+
+-- ================= [ 🛠️ دوگمەی بازنەیی نوێ بە سیستمی ڕاکێشان و جوڵاندن ] =================
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 55, 0, 55)
+ToggleButton.Position = UDim2.new(0, 20, 0.3, 0) 
+ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+ToggleButton.Text = "☀️" 
+ToggleButton.TextColor3 = Color3.fromRGB(255, 180, 0)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 26
+ToggleButton.Active = true
+ToggleButton.Draggable = true
+ToggleButton.Visible = false 
+ToggleButton.Parent = ScreenGui
+
+local TBCorner = Instance.new("UICorner")
+TBCorner.CornerRadius = UDim.new(1, 0)
+TBCorner.Parent = ToggleButton
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 35, 0, 35)
+CloseButton.Position = UDim2.new(1, -42, 0, 8)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "✕"
+CloseButton.TextColor3 = Color3.fromRGB(200, 200, 210)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 18
+CloseButton.Parent = Frame
+
+CloseButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    ToggleButton.Visible = true 
+end)
+
+ToggleButton.MouseButton1Click:Connect(function()
+    Frame.Visible = true
+    ToggleButton.Visible = false 
+end)
+```
